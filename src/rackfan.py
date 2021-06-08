@@ -28,7 +28,10 @@ class RackFan:
         self.init_communication()
 
         if self.args.one_off:
-            grid.set_fan(ser=self.ser, fan=self.args.fan, voltage=grid.calculate_voltage(self.args.percentage), lock=self.lock)
+            for fan_number in self.args.fan:
+                grid.set_fan(ser=self.ser, fan=fan_number, voltage=grid.calculate_voltage(self.args.percentage), lock=self.lock)
+            time.sleep(3)
+            print(grid.read_fan_rpm(ser=self.ser,lock=self.lock))
             sys.exit(0)
 
         self.main_loop()
@@ -47,7 +50,7 @@ class RackFan:
         parser = argparse.ArgumentParser(description=description)
         parser.add_argument("-v", "--version", help="show version information", action="store_true")
         parser.add_argument("-s", "--serial", help="specify the serial port to use")
-        parser.add_argument("-f", "--fan", help="specify a fan number to control (used with -o)", type=int)
+        parser.add_argument("-f", "--fan", action='append', help="specify a fan number to control (used with -o)", type=int)
         parser.add_argument("-p", "--percentage", help='set fan speed to x percent (used with -o)', type=int)
         parser.add_argument("-o","--one-off",help="run a one-off command and exit (needs extra arguments)", action="store_true")
 
