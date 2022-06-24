@@ -36,7 +36,9 @@ class RackFan:
         # Initialize the Grid+ V2 device
         grid.initialize_grid(self.ser, self.lock)
 
-
+    def get_speeds(self):
+        return grid.read_fan_rpm(ser=self.ser, lock=self.lock)
+        
     def initialize_fans(self):
         """Initialize fans to the initial slider values."""
 

@@ -20,7 +20,7 @@ setup(
     ],
     setup_requires='setuptools',
     packages=find_packages(exclude=['tests*']),
-    version='0.3.0',
+    version='0.3.1',
     author='Ando Roots',
     author_email='ando@sqroot.eu',
     install_requires=[
