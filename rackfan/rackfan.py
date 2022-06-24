@@ -6,14 +6,11 @@ import sys
 import time
 
 class RackFan:
+    def __init__(self, args) -> None:
+        self.args = args
 
-    VERSION = '0.1'
-
-    def __init__(self) -> None:
-
-        self.parse_args()
-
-        # Serial communication object
+    def init_communication(self):
+         # Serial communication object
         self.ser = serial.Serial()
 
 
@@ -24,44 +21,6 @@ class RackFan:
         serial_ports = grid.get_serial_ports()
         self.serial_port = self.args.serial or serial_ports[0]
 
-        # Initialize communication
-        self.init_communication()
-
-        if self.args.one_off:
-            for fan_number in self.args.fan:
-                grid.set_fan(ser=self.ser, fan=fan_number, voltage=grid.calculate_voltage(self.args.percentage), lock=self.lock)
-            time.sleep(3)
-            print(grid.read_fan_rpm(ser=self.ser,lock=self.lock))
-            sys.exit(0)
-
-        self.main_loop()
-
-    def main_loop(self):
-
-
-        while True:
-            time.sleep(2)
-
-    def parse_args(self):
-
-        description="""
-        This software controls fans connected to NZXT GRID+ v2 fan controller
-        """
-        parser = argparse.ArgumentParser(description=description)
-        parser.add_argument("-v", "--version", help="show version information", action="store_true")
-        parser.add_argument("-s", "--serial", help="specify the serial port to use")
-        parser.add_argument("-f", "--fan", action='append', help="specify a fan number to control (used with -o)", type=int)
-        parser.add_argument("-p", "--percentage", help='set fan speed to x percent (used with -o)', type=int)
-        parser.add_argument("-o","--one-off",help="run a one-off command and exit (needs extra arguments)", action="store_true")
-
-        self.args = parser.parse_args()
-
-        if self.args.version:
-            print(self.VERSION)
-            sys.exit(0)
-
-
-    def init_communication(self):
 
         # If the serial port is open, close it
         with self.lock:
@@ -75,12 +34,8 @@ class RackFan:
         grid.open_serial(self.ser, self.lock)
 
         # Initialize the Grid+ V2 device
-        if grid.initialize_grid(self.ser, self.lock):
-            # Set the initial fan speeds based on UI values
-            self.initialize_fans()
+        grid.initialize_grid(self.ser, self.lock)
 
-        else:
-            print('Could not initialize Grid')
 
     def initialize_fans(self):
         """Initialize fans to the initial slider values."""
@@ -88,8 +43,26 @@ class RackFan:
         for i in range(1,7):
             grid.set_fan(ser=self.ser, fan=i, voltage=grid.calculate_voltage(40), lock=self.lock)
 
+    def set_fan(self, fan_number:int, fan_speed:int):
+        grid.set_fan(ser=self.ser, fan=fan_number, voltage=grid.calculate_voltage(fan_speed), lock=self.lock)
+        time.sleep(3)
+        print(grid.read_fan_rpm(ser=self.ser,lock=self.lock))
+       
+
 def main():
-    RackFan()
+
+    parser = argparse.ArgumentParser(description='Control fans connected to NZXT GRID+ V2')
+    parser.add_argument("-s", "--serial", help="specify the serial port to use")
+    parser.add_argument("-f", "--fan", action='append', help="specify a fan number to control (used with -o)", type=int)
+    parser.add_argument("-p", "--percentage", help='set fan speed to x percent (used with -o)', type=int)
+
+    args = parser.parse_args()
+    rackfan = RackFan(args)
+    
+    rackfan.init_communication()
+
+    for current_fan in args.fan:
+        rackfan.set_fan(current_fan, args.percentage)
 
 if __name__ == "__main__":
     main()
