@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='rackfan',
     description='CLI utility to control NZXT grid+ fan',
-    long_description=open('README.md').read(),
+    long_description='A fan controller script for the NZXT Grid+ v2 USB fan controller. Mainly for personal use; work in progress.',
     url='https://github.com/anroots/rackfan',
     project_urls={
         'Source Code': 'https://github.com/anroots/rackfan'
