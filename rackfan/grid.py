@@ -12,8 +12,7 @@ import time
 
 import serial
 from serial.tools import list_ports
-
-import helper
+import logging
 
 # Time (s) to wait until reading data from Grid after a request (s)
 WAIT_GRID = 0.08
@@ -34,7 +33,7 @@ def setup_serial(ser, port, lock):
             ser.timeout = 0.1  # Read timeout in seconds
             ser.write_timeout = 0.1  # Write timeout in seconds
     except Exception as e:
-        helper.show_error("Problem initializing serial port " + port + ".\n\n"
+        logging.error("Problem initializing serial port " + port + ".\n\n"
                           "Exception:\n" + str(e) + "\n\n"
                           "The application will now exit.")
         sys.exit(0)
@@ -45,7 +44,7 @@ def open_serial(ser, lock):
         with lock:
             ser.open()
     except Exception as e:
-        helper.show_error("Could not open serial port " + ser.port + ".\n\n"
+        logging.error("Could not open serial port " + ser.port + ".\n\n"
                           "Is another instance of Grid Control running?\n\n"
                           "Exception:\n" + str(e) + "\n\n"
                           "The application will now exit.")
@@ -82,20 +81,20 @@ def initialize_grid(ser, lock):
 
                 # Incorrect response received from the grid
                 else:
-                    helper.show_error("Problem initializing the Grid unit.\n\n"
+                    logging.error("Problem initializing the Grid unit.\n\n"
                                       "Response 0x21 expected, got " + hex(ord(response)) + ".\n\n"
                                       "Please check serial port " + ser.port +".\n")
                     return False
 
             # In case no response (0 bytes) from the Grid
             else:
-                helper.show_error("Problem initializing the Grid unit.\n\n"
+                logging.error("Problem initializing the Grid unit.\n\n"
                                   "Response 0x21 expected, no response received.\n\n"
                                    "Please check serial port " + ser.port +".\n")
                 return False
 
     except Exception as e:
-            helper.show_error("Problem initializing the Grid unit.\n\n"
+            logging.error("Problem initializing the Grid unit.\n\n"
                               "Exception:\n" + str(e) + "\n\n"
                               "The application will now exit.")
             sys.exit(0)
@@ -153,7 +152,7 @@ def set_fan(ser, fan, voltage, lock):
             response = ser.read(size=1)
             print("Fan " + str(fan) + " updated")
     except Exception as e:
-        helper.show_error("Could not set speed for fan " + str(fan) + ".\n\n"
+        logging.error("Could not set speed for fan " + str(fan) + ".\n\n"
                           "Please check settings for serial port " + str(ser.port) + ".\n\n"
                           "Exception:\n" + str(e) + "\n\n"
                           "The application will now exit.")
@@ -205,7 +204,7 @@ def read_fan_rpm(ser, lock):
                     return []
 
             except Exception as e:
-                helper.show_error("Could not read rpm for fan " + str(fan) + ".\n\n"
+                logging.error("Could not read rpm for fan " + str(fan) + ".\n\n"
                                   "Please check serial port settings.\n\n"
                                   "Exception:\n" + str(e) + "\n\n"
                                   "The application will now exit.")
@@ -262,7 +261,7 @@ def read_fan_voltage(ser, lock):
                     return []
 
             except Exception as e:
-                helper.show_error("Could not read fan voltage.\n\n"
+                logging.error("Could not read fan voltage.\n\n"
                                   "Please check serial port " + ser.port + ".\n\n"
                                   "Exception:\n" + str(e) + "\n\n"
                                   "The application will now exit.")

@@ -1,7 +1,7 @@
 import argparse
 import threading
 import serial
-import grid, helper
+from rackfan import grid
 import sys
 import time
 
@@ -80,7 +80,7 @@ class RackFan:
             self.initialize_fans()
 
         else:
-            helper.show_error('Could not initialize Grid')
+            print('Could not initialize Grid')
 
     def initialize_fans(self):
         """Initialize fans to the initial slider values."""
@@ -88,5 +88,8 @@ class RackFan:
         for i in range(1,7):
             grid.set_fan(ser=self.ser, fan=i, voltage=grid.calculate_voltage(40), lock=self.lock)
 
+def main():
+    RackFan()
+
 if __name__ == "__main__":
-    rackfan = RackFan()
+    main()

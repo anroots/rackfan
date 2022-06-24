@@ -7,9 +7,8 @@ Mainly for personal use; work in progress.
 ## Usage
 
 ```bash
-$ pip install requirements.txt
-$ cd src
-$ python3 rackfan.py --help
+$ pip install rackfan
+$ rackfan
 usage: rackfan.py [-h] [-v] [-s SERIAL] [-f FAN] [-p PERCENTAGE] [-o]
 
 This software controls fans connected to NZXT GRID+ v2 fan controller
