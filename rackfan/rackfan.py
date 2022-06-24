@@ -38,7 +38,7 @@ class RackFan:
 
     def get_speeds(self):
         return grid.read_fan_rpm(ser=self.ser, lock=self.lock)
-        
+
     def initialize_fans(self):
         """Initialize fans to the initial slider values."""
 
@@ -47,7 +47,7 @@ class RackFan:
 
     def set_fan(self, fan_number:int, fan_speed:int):
         grid.set_fan(ser=self.ser, fan=fan_number, voltage=grid.calculate_voltage(fan_speed), lock=self.lock)
-        time.sleep(3)
+        time.sleep(1)
         print(grid.read_fan_rpm(ser=self.ser,lock=self.lock))
        
 
